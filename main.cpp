@@ -6,6 +6,7 @@ using namespace std;
 
 vector<int> arr;
 vector<int> tmp_arr;
+int threshold;
 
 void merge_sort(int left, int right) {
      if (left == right) return;
@@ -71,6 +72,49 @@ void *mt_merge_sort(void *args) {
      return NULL;
 }
 
+void *mix_merge_sort(void *args) {
+     bound *B = (bound*)args;
+     int left = B->left;
+     int right = B->right;
+     if (left == right) return NULL;
+
+     int mid = (left + right) / 2;
+     bound left_half = (bound){.left = left, .right = mid};
+     bound right_half = (bound){.left = mid+1, .right = right};
+
+     if (right - left + 1 > threshold) {
+         pthread_t tidL, tidR;
+         pthread_attr_t attr;
+         pthread_attr_init(&attr);
+
+         pthread_create(&tidL, &attr, mix_merge_sort, (void*)(&left_half)); // merge_sort(left, mid);
+         pthread_create(&tidR, &attr, mix_merge_sort, (void*)(&right_half)); // merge_sort(mid+1, right);
+         pthread_join(tidL, NULL);
+         pthread_join(tidR, NULL);
+     }else {
+         //mt_merge_sort((void*)(&left_half));
+         //mt_merge_sort((void*)(&right_half));
+         merge_sort(left, mid);
+         merge_sort(mid+1, right);
+     }
+
+     int ind = mid + 1;
+     int l = left;
+     for (int i = left; i <= right; i++) {
+         if (l == mid+1) {
+             tmp_arr[i] = arr[ind++];
+         }else if (ind == right+1) {
+             tmp_arr[i] = arr[l++];
+         }else if (arr[l] > arr[ind]) {
+             tmp_arr[i] = arr[ind++];
+         }else {
+             tmp_arr[i] = arr[l++];
+         }
+     }
+     for (int i = left; i <= right; i++) arr[i] = tmp_arr[i];
+     return NULL;
+}
+
 int main(int argc, char *argv[]) {
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
@@ -87,6 +131,10 @@ int main(int argc, char *argv[]) {
     else if ((string)argv[1] == "mt") {
          bound B = (bound){0, n-1};
          mt_merge_sort((void*)&B);
+    }else if ((string)argv[1] == "mix") {
+        bound B = (bound){0, n-1};
+        threshold = atoi(argv[2]);
+        mix_merge_sort((void*)&B);
     }else {
          cout<< "No sort\n";
          return 0;
