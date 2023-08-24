@@ -20,3 +20,9 @@ How wide the value range is? :   % the numbers range between -value ~ value
 - mt: full multithreading mergesort
 - mix: multithreading above *threshold*, normal below it
 
+
+## Compile Setting
+
+```{shell}
+g++ -std=c++17 -O2 -o main main.cpp
+```
