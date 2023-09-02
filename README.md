@@ -7,9 +7,9 @@ This is a small project that implements mergesort and its multithread version by
 `gen.py`:
 ```
 ./gen.py
-Testcase No. ? :                 % the index no. of the following generated testcase
-How many ints? :                 % the number in the generated testcase you want
-How wide the value range is? :   % the numbers range between -value ~ value
+Testcase No. ? :                 # the index no. of the following generated testcase
+How many ints? :                 # the number in the generated testcase you want
+How wide the value range is? :   # the numbers range between -value ~ value
 ```
 
 `main`:
